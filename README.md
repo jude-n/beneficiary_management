@@ -51,7 +51,11 @@ http://localhost:8080/
 server: mysql
 and the rest of the fields should be in the env file.
 
-ifno tables are created you can run the migrations
+No tables are created you can run the migrations
 ```
 docker compose exec php php artisan migrate --force
+```
+Then you can run the seeder
+```
+docker compose exec php php artisan db:seed --force
 ```
