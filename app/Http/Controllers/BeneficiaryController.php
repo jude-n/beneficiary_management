@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Services\IBeneficiaryService;
+use App\Http\Requests\BeneficiaryUpdateRequest;
 use App\Models\Beneficiary;
 use Inertia\Inertia;
 
@@ -35,8 +36,12 @@ class BeneficiaryController extends Controller
         return response()->json($results);
     }
 
-    public function update()
+    public function update(BeneficiaryUpdateRequest $request, $id)
     {
+//        dd($request->all());
+        $validatedData = $request->validated();
+        $this->beneficiaryService->updateBeneficiary($id, $validatedData);
 
+        return response()->json(['message' => 'Beneficiary updated successfully']);
     }
 }

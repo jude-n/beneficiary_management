@@ -12,15 +12,25 @@ class BeneficiaryRepository implements IBeneficiaryRepository
         return Beneficiary::all();
     }
 
+    public function getBeneficiary($id)
+    {
+        return Beneficiary::find($id);
+    }
+
     public function getAllActiveBeneficiaries()
     {
         return Beneficiary::where('status', 'active')->count();
     }
 
 
-    public function updateBeneficiary()
+    public function updateBeneficiary($id, array $data)
     {
-        // TODO: Implement updateBeneficiary() method.
+        $beneficiary = Beneficiary::find($id);
+        if (!$beneficiary) {
+            return false;
+        }
+
+        return $beneficiary->update($data);
     }
 
 

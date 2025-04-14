@@ -6,6 +6,8 @@ interface IBeneficiaryRepository
 {
     public function getAllBeneficiaries();
 
+    public function getBeneficiary($id);
+
     public function getAllActiveBeneficiaries();
-    public function updateBeneficiary();
+    public function updateBeneficiary($id, array $data);
 }

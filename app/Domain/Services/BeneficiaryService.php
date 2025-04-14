@@ -41,9 +41,15 @@ class BeneficiaryService implements IBeneficiaryService
         ];
     }
 
-    public function updateBeneficiary()
+    public function updateBeneficiary($id, array $data)
     {
-        // TODO: Implement updateBeneficiary() method.
+        $updatedBeneficiary = $this->beneficiaryRepository->updateBeneficiary($id, $data);
+        if (!$updatedBeneficiary) {
+            return false;
+        }
+        $this->invalidateCache('active_beneficiaries');
+        return $updatedBeneficiary;
+
     }
 
 

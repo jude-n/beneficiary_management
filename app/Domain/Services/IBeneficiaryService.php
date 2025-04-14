@@ -17,7 +17,7 @@ interface IBeneficiaryService
     /**
      * @return mixed
      */
-    public function updateBeneficiary();
+    public function updateBeneficiary($id, array $data);
 
     /**
      * @param $key
