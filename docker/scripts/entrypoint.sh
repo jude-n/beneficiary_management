@@ -57,6 +57,9 @@ fi
 if [ "$CONTAINER_ROLE" = "migrate" ]; then
     echo "Running migrations..."
     php artisan migrate --force
+
+    echo "Running seeders..."
+    php artisan db:seed --force
     exit 0
 fi
 

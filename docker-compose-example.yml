@@ -1,36 +1,78 @@
 services:
-  # PHP (Laravel) application service
+  # Laravel PHP application container
   php:
     build:
-      context: .  # Build context is the root of the project
-      dockerfile: docker/php.dockerfile  # Adjust path to your PHP Dockerfile
-    image: ${APP_NAME}_php:arm-dev  # Image name with tag, using the app name from .env
+      context: .
+      dockerfile: docker/php.dockerfile
+    image: ${APP_NAME}_php:arm-dev
     volumes:
-      - webapp:/var/www/html  # Mount app code to the container's web root
-    env_file:
-      - .env  # Load environment variables from .env file
-
-  # Nginx web server service
-  web:
-    build:
-      context: .  # Same build context
-      dockerfile: docker/nginx.dockerfile  # Path to your Nginx Dockerfile
-    image: ${APP_NAME}_nginx:arm-dev  # Image name with tag
-    ports:
-      - "${APP_PORT}:443"  # Map custom host port to container's SSL port
-    volumes:
-      - webapp:/var/www  # Mount the same volume for consistency
-    depends_on:
-      - php  # Ensure PHP is running before Nginx starts
+      - beneficiary:/var/www/html
     env_file:
       - .env
 
-# Define a shared named volume for the application code
+  # Nginx web server container
+  web:
+    build:
+      context: .
+      dockerfile: docker/nginx.dockerfile
+    image: ${APP_NAME}_nginx:arm-dev
+    ports:
+      - "${APP_PORT}:443"  # Map a custom port (from .env) to container port 443 (SSL)
+    volumes:
+      - beneficiary:/var/www/html
+    depends_on:
+      - php
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    ports:
+      - "${MYSQL_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql
+
+
+  vite: # Vite.js development server container because volumes overwrite what is in the container I am using this to build assets locally then copy them to the container
+    image: node:alpine
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    command: >
+      sh -c "
+          # Check if node_modules exists and isn't empty
+          if [ ! -d node_modules ] || [ -z \"\$(ls -A node_modules)\" ]; then
+              echo 'Node modules not found, installing...';
+              npm install;  # Install dependencies if node_modules is missing or empty
+          fi;
+          echo 'Starting application...';
+          npm run build && npm run watch # Build production assets, then start watch mode
+      "
+
+# Define shared named volume with driver options
 volumes:
-  webapp:
+  beneficiary:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${VOLUME_LOCAL_MACHINE}  # Path to your local Laravel app, set in .env
+      device: ${VOLUME_LOCAL_MACHINE}
+  mysql_data:
 
