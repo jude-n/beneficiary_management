@@ -22,7 +22,7 @@ class BeneficiaryFactory extends Factory
             'first_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
             'preferred_name' => $this->faker->firstName(),
-            'status' => $this->faker->randomElement(['primary', 'contingent']),
+            'status' => $this->faker->randomElement(['active', 'inactive', 'pending']),
             'email' => $this->faker->unique()->safeEmail(),
             'relationship' => $this->faker->randomElement(['spouse', 'child', 'parent', 'sibling', 'friend']),
             'phone' => $this->faker->phoneNumber(),

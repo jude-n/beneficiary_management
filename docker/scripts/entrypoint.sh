@@ -10,7 +10,7 @@ FPM_CUSTOM_CONF=/usr/local/etc/php-fpm.d/custom.conf
 # Set a default container role if it's not provided
 [ -z "${CONTAINER_ROLE}" ] && echo "CONTAINER_ROLE is unset, defaulting to 'app'." && CONTAINER_ROLE="app"
 
-# Optional: Dynamically configure PHP and FPM settings based on environment variables
+#Dynamically configure PHP and FPM settings based on environment variables
 function config() {
     # Loop through environment variables starting with PHP_CONF_ and write to custom.ini
     for PHPVAR in $(env | grep "^PHP_CONF_"); do

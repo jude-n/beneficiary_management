@@ -64,4 +64,6 @@ RUN chown www-data:www-data -R /var/www/html/storage
 COPY docker/scripts/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["php-fpm"]
 
